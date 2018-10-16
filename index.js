@@ -111,7 +111,7 @@ function goals (state = [], action) {
 
 function app (state = {}, action) {
   return {
-    todos: toDos(state.todos, action),
+    toDos: toDos(state.todos, action),
     goals: goals(state.goals, action)
   }
 }
@@ -121,6 +121,15 @@ const store = createStore(app)
  
 store.subscribe(() => {
   console.log(`The new state is: `, store.getState())
+
+  // Clear DOM
+  document.getElementById('goals').innerHTML = ''
+  document.getElementById('to-dos').innerHTML = ''
+
+  // Invoke DOM methods to append each of the state elements to DOM 
+  const { goals, toDos } = store.getState()
+  goals.forEach(addGoalToDOM)
+  toDos.forEach(addToDoToDOM)
 })
 
 // const unsubscribe = store.subscribe(() => {
@@ -174,6 +183,8 @@ store.subscribe(() => {
 
 // store.dispatch(removeGoalAction(0))
 
+
+// DOM Code
 function addToDo () {
   const input = document.getElementById('to-do')
   const name = input.value
@@ -202,3 +213,24 @@ document.getElementById('toDoBtn')
 
 document.getElementById('goalBtn')
   .addEventListener('click', addGoal);
+
+function addToDoToDOM (toDo) {
+  const node = document.createElement('li')
+  const text = document.createTextNode(toDo.name)
+  node.appendChild(text)
+
+  document.getElementById('to-dos')
+    .appendChild(node)
+
+}
+
+function addGoalToDOM (goal) {
+  const node = document.createElement('li')
+  const text = document.createTextNode(goal.name)
+  node.appendChild(text)
+
+  document.getElementById('goals')
+    .appendChild(node)
+
+
+}
