@@ -93,18 +93,30 @@ function checkAndDispatch(store, action) {
   if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
     return alert("Bad idea.")
   } 
-
   if (action.type === ADD_GOAL && action.goal.name.toLowerCase().includes('bitcoin')) {
     return alert("Bad idea.")
   }
-
   return store.dispatch(action)
+}
+
+function checker(store) {
+  return function(next) {
+    return function(action) {
+      if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
+        return alert("Bad idea.")
+      } 
+      if (action.type === ADD_GOAL && action.goal.name.toLowerCase().includes('bitcoin')) {
+        return alert("Bad idea.")
+      }
+      return next(action)
+    }
+  }
 }
 
 const store = Redux.createStore(Redux.combineReducers({
   todos: todos,
   goals: goals
-}))
+}), Redux.applyMiddleware(checker))
  
 store.subscribe(() => {
   console.log(`The new state is: `, store.getState())
@@ -131,7 +143,7 @@ function addToDo () {
   const name = input.value
   input.value = ''
 
-  checkAndDispatch(store, addToDoAction({
+  store.dispatch(addToDoAction({
     name,
     complete: false,
     id: generateId()
@@ -143,7 +155,7 @@ function addGoal () {
   const name = input.value
   input.value = ''
 
-  checkAndDispatch(store, addGoalAction({
+  store.dispatch(addGoalAction({
     name,
     id: generateId()
   }))
@@ -170,7 +182,7 @@ function addToDoToDOM (todo) {
   const removeBtn = createRemoveButton(() => {
     // The callback function that is hooked to createRemoveButton
     // Invoke dispatch method
-    checkAndDispatch(store, removeToDoAction(todo.id))
+    store.dispatch(removeToDoAction(todo.id))
   })
 
   node.appendChild(text)
@@ -179,7 +191,7 @@ function addToDoToDOM (todo) {
   // Toggle complete boolean
   node.style.textDecoration = todo.complete ? 'line-through' : 'none'
   node.addEventListener('click', () => {
-    checkAndDispatch(store, toggleToDoAction(todo.id))
+    store.dispatch(toggleToDoAction(todo.id))
   })
 
   document.getElementById('to-dos')
@@ -196,7 +208,7 @@ function addGoalToDOM (goal) {
   removeBtn.innerHTML = 'X'
   removeBtn.addEventListener('click', () => {
     // Invoke dispatch method
-    checkAndDispatch(store, removeGoalAction(goal.id))
+    store.dispatch(removeGoalAction(goal.id))
   })
 
   node.appendChild(text)
