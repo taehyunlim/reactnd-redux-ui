@@ -4,36 +4,7 @@ function generateId () {
 }
 
 // Library Code
-function createStore (reducer) {
-  // The store should have four parts
-  // 1. The state
-  // 2. Get the state
-  // 3. Listen to the changes on the state
-  // 4. Update the state
-
-  let state
-  let listeners = []
-
-  const getState = () => state
-
-  const subscribe = (listener) => {
-    listeners.push(listener)
-    return () => {
-      listeners = listeners.filter((l) => l !== listener)
-    }
-  }
-
-  const dispatch = (action) => {
-    state = reducer(state, action)
-    listeners.forEach((listener) => listener())
-  }
-
-  return {
-    getState,
-    subscribe,
-    dispatch
-  }
-}
+// (Replaced with Redux library)
 
 // App Code
 const ADD_TODO = 'ADD_TODO',
@@ -85,7 +56,7 @@ function mealCreator(id) {
   }
 }
 
-function toDos (state = [], action) {
+function todos (state = [], action) {
   switch (action.type) {
     case ADD_TODO:
       return state.concat([action.todo])
@@ -109,15 +80,18 @@ function goals (state = [], action) {
   }
 }
 
-function app (state = {}, action) {
-  return {
-    todos: toDos(state.todos, action),
-    goals: goals(state.goals, action)
-  }
-}
+// Comebine _reducer_ functions
+// function app (state = {}, action) {
+//   return {
+//     todos: todos(state.todos, action),
+//     goals: goals(state.goals, action)
+//   }
+// }
 
-
-const store = createStore(app)
+const store = Redux.createStore(Redux.combineReducers({
+  todos: todos,
+  goals: goals
+}))
  
 store.subscribe(() => {
   console.log(`The new state is: `, store.getState())
