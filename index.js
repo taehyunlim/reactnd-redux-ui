@@ -138,52 +138,6 @@ store.subscribe(() => {
 
 // unsubscribe()
 
-
-// //  ACTIONS - DISPATCH INVOCATIONS
-// store.dispatch(addTodoAction({
-//   id: 0,
-//   name: 'Walk the dog',
-//   complete: false,
-//   }))
-
-// store.dispatch(addTodoAction({
-//   id: 1,
-//   name: 'Wash the car',
-//   complete: false,
-// }))
-
-// store.dispatch({
-//   type: ADD_GOAL,
-//   goal: {
-//     id: 3,
-//     name: 'TEST',
-//     complete: true,
-//   }
-// })
-
-// store.dispatch(addTodoAction({
-//   id: 2,
-//   name: 'Go to the gym',
-//   complete: true,
-// }))
-
-// store.dispatch(removeTodoAction(1))
-
-// store.dispatch(toggleTodoAction(0))
-
-// store.dispatch(addGoalAction({
-//   id: 0,
-//   name: 'Learn Redux'
-// }))
-
-// store.dispatch(addGoalAction({
-//   id: 1,
-//   name: 'Lose 20 pounds'
-// }))
-
-// store.dispatch(removeGoalAction(0))
-
-
 // DOM Code
 function addToDo () {
   const input = document.getElementById('to-do')
