@@ -214,10 +214,26 @@ document.getElementById('toDoBtn')
 document.getElementById('goalBtn')
   .addEventListener('click', addGoal);
 
+// Declare a function whose callback function is hooked to a DOM event listener
+function createRemoveButton (callback) {
+  const removeBtn = document.createElement('button')
+  removeBtn.innerHTML = 'X'
+  removeBtn.addEventListener('click', callback)
+  return removeBtn
+}
+
 function addToDoToDOM (todo) {
   const node = document.createElement('li')
   const text = document.createTextNode(todo.name)
+
+  const removeBtn = createRemoveButton(() => {
+    // The callback function that is hooked to createRemoveButton
+    // Invoke dispatch method
+    store.dispatch(removeToDoAction(todo.id))
+  })
+
   node.appendChild(text)
+  node.appendChild(removeBtn)
 
   // Toggle complete boolean
   node.style.textDecoration = todo.complete ? 'line-through' : 'none'
@@ -233,7 +249,17 @@ function addToDoToDOM (todo) {
 function addGoalToDOM (goal) {
   const node = document.createElement('li')
   const text = document.createTextNode(goal.name)
+
+  // Purposely did not use _createRemoveButton_ method delcared above to demonstrate the callback invocation parameter in _addEventListener_ method
+  const removeBtn = document.createElement('button')
+  removeBtn.innerHTML = 'X'
+  removeBtn.addEventListener('click', () => {
+    // Invoke dispatch method
+    store.dispatch(removeGoalAction(goal.id))
+  })
+
   node.appendChild(text)
+  node.appendChild(removeBtn)
 
   document.getElementById('goals')
     .appendChild(node)
