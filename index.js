@@ -102,6 +102,8 @@ const checker = store => next => action => {
 const store = Redux.createStore(Redux.combineReducers({
   todos: todos,
   goals: goals
+  // Invoke checker function as the second argument, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
+  // Redux.applyMiddleware(...middlewares)
 }), Redux.applyMiddleware(checker))
  
 store.subscribe(() => {
