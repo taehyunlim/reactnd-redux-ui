@@ -109,12 +109,26 @@ const logger = (store) => (next) => (action) => {
   return result
 }
 
+// Just 'cause
+const commentAlert = (store) => (next) => (action) => {
+  if (action.type === ADD_GOAL && action.goal.name !== '') {
+    alert("That's a great goal!")
+  } else if (action.type === ADD_TODO && action.todo.name !== '') {
+    alert(`Don't forget to ${action.todo.name}!`)
+  }
+  return next(action)
+}
+
 const store = Redux.createStore(Redux.combineReducers({
   todos: todos,
   goals: goals
   // Invoke checker function as the second argument to createStore, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
   // Redux.applyMiddleware(...middlewares)
-}), Redux.applyMiddleware(checker, logger))
+  }), Redux.applyMiddleware(
+    checker, 
+    logger,
+    commentAlert
+  ))
  
 store.subscribe(() => {
   console.log(`The new state is: `, store.getState())
