@@ -88,29 +88,15 @@ function goals (state = [], action) {
 //   }
 // }
 
-// Manual validation before store.distpatch runs
-function checkAndDispatch(store, action) {
+// Middleware checks and validate input
+const checker = store => next => action => {
   if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
     return alert("Bad idea.")
   } 
   if (action.type === ADD_GOAL && action.goal.name.toLowerCase().includes('bitcoin')) {
     return alert("Bad idea.")
   }
-  return store.dispatch(action)
-}
-
-function checker(store) {
-  return function(next) {
-    return function(action) {
-      if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
-        return alert("Bad idea.")
-      } 
-      if (action.type === ADD_GOAL && action.goal.name.toLowerCase().includes('bitcoin')) {
-        return alert("Bad idea.")
-      }
-      return next(action)
-    }
-  }
+  return next(action)
 }
 
 const store = Redux.createStore(Redux.combineReducers({
