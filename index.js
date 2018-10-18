@@ -88,7 +88,7 @@ function goals (state = [], action) {
 //   }
 // }
 
-// Middleware checks and validate input
+// First middleware: checks and validate input
 const checker = store => next => action => {
   if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
     return alert("Bad idea.")
@@ -99,12 +99,22 @@ const checker = store => next => action => {
   return next(action)
 }
 
+// Second middleware: logger
+const logger = (store) => (next) => (action) => {
+  console.group(action.type)
+    console.log('The action: ', action)
+    const result = next(action)
+    console.log('The new state: ', store.getState())
+  console.groupEnd()
+  return result
+}
+
 const store = Redux.createStore(Redux.combineReducers({
   todos: todos,
   goals: goals
-  // Invoke checker function as the second argument, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
+  // Invoke checker function as the second argument to createStore, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
   // Redux.applyMiddleware(...middlewares)
-}), Redux.applyMiddleware(checker))
+}), Redux.applyMiddleware(checker, logger))
  
 store.subscribe(() => {
   console.log(`The new state is: `, store.getState())
