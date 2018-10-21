@@ -127,7 +127,7 @@ const store = Redux.createStore(Redux.combineReducers({
   }), Redux.applyMiddleware(
     checker, 
     logger,
-    commentAlert
+    // commentAlert
   ))
  
 store.subscribe(() => {

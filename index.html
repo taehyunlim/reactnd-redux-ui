@@ -5,6 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>REDUX + UI</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
+  <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
+  <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
+  <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
@@ -22,6 +25,130 @@
     <ul id='goals'></ul>
   </div>
   
-  <script src="index.js"></script>
+  <hr />
+
+  <div id='app'></div>
+  
+  <script type='text/javascript' src='index.js'></script>
+  <script type='text/babel'>
+    function List (props) {
+      return (
+        <ul>
+          {props.items.map((item) => (
+            <li key={item.id}>
+              <span onClick={() => props.toggle && props.toggle(item.id)}
+                style={{textDecoration: item.complete ? 'line-through' : 'none'}}
+              >{item.name}
+              </span>
+              <button onClick={() => props.remove(item)} >X</button>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    class Todos extends React.Component {
+      addItem = (e) => {
+        e.preventDefault()
+        const name = this.input.value
+        this.input.value = ''
+        // Invoke dispatch
+        this.props.store.dispatch(addToDoAction({
+          name,
+          complete: false,
+          id: generateId()
+        }))
+      }
+      // Remove item method
+      removeItem = (todo) => {
+        this.props.store.dispatch(removeToDoAction(todo.id))
+      }
+      // Toggle item method
+      toggleItem = (id) => {
+        this.props.store.dispatch(toggleToDoAction(id))
+      }
+
+      render() {
+        return (
+          <div>
+            <h1>To-Do List</h1>
+            <input 
+              type='text'
+              placeholder='Add To-Do'
+              // Refs provide a way to access DOM nodes or React elements created in the render method.
+              ref={(input) => this.input = input}
+            />
+            <button onClick={this.addItem} >Add To-Do</button>
+
+            <List 
+              items={this.props.todos} 
+              remove={this.removeItem}
+              toggle={this.toggleItem}
+            />
+          </div>
+        )
+      }
+    }
+
+    class Goals extends React.Component {
+      addItem = (e) => {
+        const name = this.input.value
+        this.input.value = ''
+        // Invoke dispatch
+        this.props.store.dispatch(addGoalAction({
+          name,
+          id: generateId()
+        }))
+      }
+      // Remove item method
+      removeItem = (goal) => {
+        this.props.store.dispatch(removeGoalAction(goal.id))
+      }
+
+      render() {
+        return (
+          <div>
+            <h1>Goals</h1>
+            <input 
+              type='text'
+              placeholder='Add Goal'
+              ref={(input) => this.input = input}
+            />
+            <button onClick={this.addItem}>Add Goal</button>
+
+            <List 
+              items={this.props.goals} 
+              remove={this.removeItem}
+            />
+          </div>
+        )
+      }
+    }
+
+    class App extends React.Component {
+      componentDidMount() {
+        const { store } = this.props
+        // Re-render using store changes
+        // CAUTION: This is an anti-pattern. Only use in specific circumstance
+        store.subscribe(() => this.forceUpdate())
+      }
+      render() {
+        const { store } = this.props
+        const { todos, goals } = store.getState()
+
+        return(
+          <div>
+            <Todos todos={todos} store={this.props.store} />
+            <Goals goals={goals} store={this.props.store} />  
+          </div>  
+        )
+      }
+    }
+  
+    ReactDOM.render(
+      <App store={store} />,
+      document.getElementById('app')
+    )
+  </script>
 </body>
 </html>
