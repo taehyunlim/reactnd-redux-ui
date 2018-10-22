@@ -35,22 +35,34 @@
     class Todos extends React.Component {
       addItem = (e) => {
         e.preventDefault()
-        const name = this.input.value
-        this.input.value = ''
-        // Invoke dispatch
-        this.props.store.dispatch(addToDoAction({
-          name,
-          complete: false,
-          id: generateId()
-        }))
+        
+        return API.saveTodo(this.input.value)
+          .then((todo) => {
+            this.props.store.dispatch(addToDoAction(todo))
+            this.input.value = ''
+          }).catch(() => {
+            alert('There was an error. Try again.')
+          })
       }
       // Remove item method
       removeItem = (todo) => {
+        // Optimistically delete todo and restore when failed
         this.props.store.dispatch(removeToDoAction(todo.id))
+        return API.deleteTodo(todo.id)
+          .catch(() => {
+            this.props.store.dispatch(addToDoAction(todo))
+            alert('An error occurred. Try again.')
+          })
       }
       // Toggle item method
       toggleItem = (id) => {
+        // Optimistically toggle todo and restore when failed
         this.props.store.dispatch(toggleToDoAction(id))
+        return API.saveTodoToggle(id)
+          .catch(() => {
+            this.props.store.dispatch(toggleToDoAction(id))
+            alert('An error occurred. Try again.')
+          })
       }
 
       render() {
@@ -77,17 +89,23 @@
 
     class Goals extends React.Component {
       addItem = (e) => {
-        const name = this.input.value
-        this.input.value = ''
-        // Invoke dispatch
-        this.props.store.dispatch(addGoalAction({
-          name,
-          id: generateId()
-        }))
+        e.preventDefault()
+
+        return API.saveGoal(this.input.value)
+          .then((goal) => {
+            this.props.store.dispatch(addGoalAction(goal))
+            this.input.value = ''
+          }).catch(() => alert('An error occurred. Try again.'))
       }
       // Remove item method
       removeItem = (goal) => {
+        // Optimistically delete goal and restore when failed
         this.props.store.dispatch(removeGoalAction(goal.id))
+        return API.deleteGoal(goal.id)
+          .catch(() => {
+            this.props.store.dispatch(addGoalAction(goal))
+            alert('An error occurred. Try again.')
+          })
       }
 
       render() {
