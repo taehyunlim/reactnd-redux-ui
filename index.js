@@ -146,13 +146,13 @@ const logger = (store) => (next) => (action) => {
   return result
 }
 
-// Thunk
-const thunk = (store) => (next) => (action) => {
-  if (typeof action === 'function') {
-    return action(store.dispatch)
-  }
-  return next(action)
-}
+// // Custom Thunk
+// const thunk = (store) => (next) => (action) => {
+//   if (typeof action === 'function') {
+//     return action(store.dispatch)
+//   }
+//   return next(action)
+// }
 
 // Just 'cause
 const commentAlert = (store) => (next) => (action) => {
@@ -171,7 +171,7 @@ const store = Redux.createStore(Redux.combineReducers({
   // Invoke checker function as the second argument to createStore, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
   // Redux.applyMiddleware(...middlewares)
   }), Redux.applyMiddleware(
-    thunk,
+    ReduxThunk.default,
     checker, 
     logger,
     // commentAlert
