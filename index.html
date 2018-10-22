@@ -8,27 +8,12 @@
   <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
   <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
   <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
+  <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
 <body>
-  <div>
-    <h1>To-Do List</h1>
-    <input id='to-do' type='text' placeholder='Add To Do' />
-    <button id='toDoBtn'>Add To-Do</button>
-    <ul id='to-dos'></ul>
-  </div>
-  <div>
-    <h1>Goals</h1>
-    <input id='goal' type='text' placeholder='Add Goal' />
-    <button id='goalBtn'>Add Goal</button>
-    <ul id='goals'></ul>
-  </div>
-  
-  <hr />
-
   <div id='app'></div>
-  
   <script type='text/javascript' src='index.js'></script>
   <script type='text/babel'>
     function List (props) {
@@ -128,13 +113,27 @@
     class App extends React.Component {
       componentDidMount() {
         const { store } = this.props
+
+        Promise.all([
+          API.fetchTodos(),
+          API.fetchGoals()
+        ]).then(([todos, goals]) => {
+          store.dispatch(receiveDataAction(todos, goals))
+          console.log('Todos: ', todos)
+          console.log('Goals: ', goals)
+        })
+        
         // Re-render using store changes
         // CAUTION: This is an anti-pattern. Only use in specific circumstance
         store.subscribe(() => this.forceUpdate())
       }
       render() {
         const { store } = this.props
-        const { todos, goals } = store.getState()
+        const { todos, goals, loading } = store.getState()
+
+        if (loading === true) {
+          return <h3>Loading</h3>
+        }
 
         return(
           <div>
