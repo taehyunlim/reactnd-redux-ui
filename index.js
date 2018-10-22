@@ -79,6 +79,64 @@ function handleDeleteTodo(todo) {
   }
 }
 
+function handleAddGoal (name, cb) {
+  return (dispatch) => {
+    return API.saveGoal(name)
+      .then((goal) => {
+        dispatch(addGoalAction(goal))
+        cb()
+      })
+      .catch(() => alert('An error occurred. Try again.'))
+  }
+}
+
+function handleDeleteGoal (goal) {
+  return (dispatch) => {
+    // Optimistically delete goal and restore when failed
+    dispatch(removeGoalAction(goal.id))
+
+    return API.deleteGoal(goal.id)
+    .catch(() => {
+      dispatch(addGoalAction(goal))
+      alert('An error occurred. Try again.')
+    })
+  }
+}
+
+function handleAddTodo (name, cb) {
+  return (dispatch) => {
+    return API.saveTodo(name)
+      .then((todo) => {
+        dispatch(addToDoAction(todo))
+        cb()
+      })
+      .catch(() => alert('An error occurred. Try again.'))
+  }
+}
+
+function handleToggleTodo (id) {
+  return (dispatch) => {
+    // Optimistically toggle todo and restore when failed
+    dispatch(toggleToDoAction(id))
+
+    return API.saveTodoToggle(id)
+      .catch(() => {
+        dispatch(toggleToDoAction(id))
+        alert('An error occurred. Try again.')
+      }) 
+  }
+}
+
+function handleInitialData () {
+  return (dispatch) => {
+    return Promise.all([
+      API.fetchTodos(),
+      API.fetchGoals()
+    ]).then(([todos, goals]) => {
+      dispatch(receiveDataAction(todos, goals))
+    })
+  }
+}
 
 function todos (state = [], action) {
   switch (action.type) {

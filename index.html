@@ -37,35 +37,20 @@
       addItem = (e) => {
         e.preventDefault()
         
-        return API.saveTodo(this.input.value)
-          .then((todo) => {
-            this.props.store.dispatch(addToDoAction(todo))
-            this.input.value = ''
-          }).catch(() => {
-            alert('There was an error. Try again.')
-          })
+        const todoName = this.input.value
+        this.props.store.dispatch(handleAddTodo(
+          todoName,
+          () => this.input.value = ''
+        ))
       }
       // Remove item method
       removeItem = (todo) => {
         // New action which handles async API code in the background
         this.props.store.dispatch(handleDeleteTodo(todo))
-        // // Optimistically delete todo and restore when failed
-        // this.props.store.dispatch(removeToDoAction(todo.id))
-        // return API.deleteTodo(todo.id)
-        //   .catch(() => {
-        //     this.props.store.dispatch(addToDoAction(todo))
-        //     alert('An error occurred. Try again.')
-        //   })
       }
       // Toggle item method
       toggleItem = (id) => {
-        // Optimistically toggle todo and restore when failed
-        this.props.store.dispatch(toggleToDoAction(id))
-        return API.saveTodoToggle(id)
-          .catch(() => {
-            this.props.store.dispatch(toggleToDoAction(id))
-            alert('An error occurred. Try again.')
-          })
+        this.props.store.dispatch(handleToggleTodo(id))
       }
 
       render() {
@@ -94,21 +79,15 @@
       addItem = (e) => {
         e.preventDefault()
 
-        return API.saveGoal(this.input.value)
-          .then((goal) => {
-            this.props.store.dispatch(addGoalAction(goal))
-            this.input.value = ''
-          }).catch(() => alert('An error occurred. Try again.'))
+        const goalName = this.input.value
+        this.props.store.dispatch(handleAddGoal(
+          goalName,
+          () => this.input.value = ''
+        ))
       }
       // Remove item method
       removeItem = (goal) => {
-        // Optimistically delete goal and restore when failed
-        this.props.store.dispatch(removeGoalAction(goal.id))
-        return API.deleteGoal(goal.id)
-          .catch(() => {
-            this.props.store.dispatch(addGoalAction(goal))
-            alert('An error occurred. Try again.')
-          })
+        this.props.store.dispatch(handleDeleteGoal(goal))
       }
 
       render() {
@@ -135,14 +114,7 @@
       componentDidMount() {
         const { store } = this.props
 
-        Promise.all([
-          API.fetchTodos(),
-          API.fetchGoals()
-        ]).then(([todos, goals]) => {
-          store.dispatch(receiveDataAction(todos, goals))
-          console.log('Todos: ', todos)
-          console.log('Goals: ', goals)
-        })
+        store.dispatch(handleInitialData())
         
         // Re-render using store changes
         // CAUTION: This is an anti-pattern. Only use in specific circumstance
