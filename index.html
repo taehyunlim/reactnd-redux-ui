@@ -9,6 +9,7 @@
   <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
   <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
   <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
+  <script src="https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
@@ -46,13 +47,15 @@
       }
       // Remove item method
       removeItem = (todo) => {
-        // Optimistically delete todo and restore when failed
-        this.props.store.dispatch(removeToDoAction(todo.id))
-        return API.deleteTodo(todo.id)
-          .catch(() => {
-            this.props.store.dispatch(addToDoAction(todo))
-            alert('An error occurred. Try again.')
-          })
+        // New action which handles async API code in the background
+        this.props.store.dispatch(handleDeleteTodo(todo))
+        // // Optimistically delete todo and restore when failed
+        // this.props.store.dispatch(removeToDoAction(todo.id))
+        // return API.deleteTodo(todo.id)
+        //   .catch(() => {
+        //     this.props.store.dispatch(addToDoAction(todo))
+        //     alert('An error occurred. Try again.')
+        //   })
       }
       // Toggle item method
       toggleItem = (id) => {

@@ -66,6 +66,20 @@ function receiveDataAction (todos, goals) {
   }
 }
 
+// New action code to handle async API calls
+function handleDeleteTodo(todo) {
+  return (dispatch) => {
+    // Optimistically delete todo and restore when faile
+    dispatch(removeToDoAction(todo.id))
+    return API.deleteTodo(todo.id)
+      .catch(() => {
+        dispatch(addToDoAction(todo))
+        alert('An error occurred. Try again.')
+      })
+  }
+}
+
+
 function todos (state = [], action) {
   switch (action.type) {
     case ADD_TODO:
@@ -132,6 +146,14 @@ const logger = (store) => (next) => (action) => {
   return result
 }
 
+// Thunk
+const thunk = (store) => (next) => (action) => {
+  if (typeof action === 'function') {
+    return action(store.dispatch)
+  }
+  return next(action)
+}
+
 // Just 'cause
 const commentAlert = (store) => (next) => (action) => {
   if (action.type === ADD_GOAL && action.goal.name !== '') {
@@ -149,6 +171,7 @@ const store = Redux.createStore(Redux.combineReducers({
   // Invoke checker function as the second argument to createStore, after applying middleware which allows the function to intercept a dispatched action before it reaches the reducer inside the store
   // Redux.applyMiddleware(...middlewares)
   }), Redux.applyMiddleware(
+    thunk,
     checker, 
     logger,
     // commentAlert
